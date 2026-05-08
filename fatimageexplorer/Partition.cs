@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System;
 using System.Reflection.Metadata.Ecma335;
 using System.Reflection.Metadata;
+using System.Formats.Asn1;
 
 namespace fatimageexplorer
 {
@@ -82,8 +83,8 @@ namespace fatimageexplorer
                 }
             }
 
-            currentDirectory = rootDirectory;
-            currentDirectorySubdirectories = rootDirectorySubdirectories;
+            CopyRootEntriesToCurrentDir();
+
             currentDirEntry = new() {startCluster = -1, directoryEntries = BPB.RootDirectoryEntries};
 
             binaryReader.Close();
@@ -97,6 +98,20 @@ namespace fatimageexplorer
             } else
             {
                 return BPB.EBPB.VolumeLabel;
+            }
+        }
+
+        private void CopyRootEntriesToCurrentDir()
+        {
+            currentDirectory = [];
+            foreach (DirectoryEntry entry in rootDirectory)
+            {
+                currentDirectory.Add(entry);
+            }
+            currentDirectorySubdirectories = [];
+            foreach (DirectoryEntry entry in rootDirectorySubdirectories)
+            {
+                currentDirectorySubdirectories.Add(entry);
             }
         }
 
@@ -129,11 +144,11 @@ namespace fatimageexplorer
             Console.WriteLine("Volume Label:\t\t" + BPB.EBPB.VolumeLabel);
         }
 
-        public void ExtractFile(string extractedName, DirectoryEntry file)
+        public void ExtractFile(string extractedName, DirectoryEntry file, bool ignoreFileSize)
         {
             if (BPB.FAT_Type == BiosParameterBlock.FAT_Type_enum.FAT12 || BPB.FAT_Type == BiosParameterBlock.FAT_Type_enum.FAT16)
             {
-                FAT12_16_ExtractFile(extractedName, file);
+                FAT12_16_ExtractFile(extractedName, file, ignoreFileSize);
             } else
             {
                 
@@ -143,10 +158,9 @@ namespace fatimageexplorer
 
         public void PopulateSubdir(ParentDirEntry _currentDirEntry)
         {
-            if (currentDirEntry.startCluster == -1)
+            if (_currentDirEntry.startCluster == -1)
             {
-                currentDirectory = rootDirectory;
-                currentDirectorySubdirectories = rootDirectorySubdirectories;
+                CopyRootEntriesToCurrentDir();
                 currentDirEntry = _currentDirEntry;
             } else
             {
@@ -159,13 +173,54 @@ namespace fatimageexplorer
                 for (int i = 0; i < _currentDirEntry.directoryEntries; i++)
                 {
                     tempEntry = new(ref binaryReader, i);
-                    if (tempEntry.FileSizeB != 0)
+                    if (!(tempEntry.FileName == ".       " || tempEntry.FileName == "..      "))
                     {
-                        currentDirectory.Add(tempEntry);
+                        if (tempEntry.FileSizeB != 0)
+                        {
+                            currentDirectory.Add(tempEntry);
+                        }
+                        if (tempEntry.Attributes.DIRECTORY == true)
+                        {
+                            currentDirectorySubdirectories.Add(tempEntry);
+                        }
                     }
-                    if (tempEntry.Attributes.DIRECTORY == true)
+                }
+
+                binaryReader.Close();
+            }
+        }
+
+        public void PopulateSubdir(ParentDirEntry _currentDirEntry, string directoryListing)
+        {
+            if (_currentDirEntry.startCluster == -1)
+            {
+                CopyRootEntriesToCurrentDir();
+                currentDirEntry = _currentDirEntry;
+            } else
+            {
+                currentDirectory = [];
+                currentDirectorySubdirectories = [];
+                binaryReader = new(File.Open(directoryListing, FileMode.OpenOrCreate));
+
+                DirectoryEntry tempEntry;
+                int i = 0;
+                while (binaryReader.BaseStream.Position < binaryReader.BaseStream.Length)
+                {
+                    tempEntry = new(ref binaryReader, i);
+                    if (!(tempEntry.FileName == ".       " || tempEntry.FileName == "..      "))
                     {
-                        currentDirectory.Add(tempEntry);
+                        if (tempEntry.Attributes.HIDDEN || tempEntry.FileExtension[2] == 0x0F)
+                        {
+                            
+                        }
+                        else if (tempEntry.FileSizeB != 0)
+                        {
+                            currentDirectory.Add(tempEntry);
+                        }
+                        else if (tempEntry.Attributes.DIRECTORY == true)
+                        {
+                            currentDirectorySubdirectories.Add(tempEntry);
+                        }
                     }
                 }
 
@@ -176,11 +231,12 @@ namespace fatimageexplorer
         public void OpenSubdir(DirectoryEntry entry)
         {
             ParentDirs.Push(currentDirEntry);
+            ExtractFile("currentdir", entry, true);
             currentDirEntry = new(){startCluster = (int)entry.startCluster, directoryEntries = 256};
-            PopulateSubdir(currentDirEntry);
+            PopulateSubdir(currentDirEntry, "currentdir");
         }
 
-        private void FAT12_16_ExtractFile(string extractedName, DirectoryEntry file)
+        private void FAT12_16_ExtractFile(string extractedName, DirectoryEntry file, bool ignoreFileSize)
         {
             bool finishedRead = false;
             uint bytesRead = 0;
@@ -188,20 +244,48 @@ namespace fatimageexplorer
             int sectorsFromThisCluster;
             BinaryWriter binaryWriter = new(File.Open(extractedName, FileMode.Create));
             binaryReader = new(File.Open(filename, FileMode.OpenOrCreate));
+            uint fileEndValue = 0;
 
-            while (bytesRead < file.FileSizeB && !finishedRead)
+            if (BPB.FAT_Type == BiosParameterBlock.FAT_Type_enum.FAT12)
+            {
+                fileEndValue = 0xFF8;
+            } else if (BPB.FAT_Type == BiosParameterBlock.FAT_Type_enum.FAT16)
+            {
+                fileEndValue = 0xFFF8;
+            }
+
+            uint maxFileSize;
+
+            if (ignoreFileSize)
+            {
+                maxFileSize = uint.MaxValue;
+            } else
+            {
+                maxFileSize = file.FileSizeB;
+            }
+
+            while (bytesRead < maxFileSize && !finishedRead)
             {
                 sectorsFromThisCluster = 0;
+                if (ignoreFileSize)
+                {
+                    if (currentClusterNumber > fileEndValue)
+                    {
+                        binaryWriter.Close();
+                        binaryReader.Close();
+                        return;
+                    }
+                }
                 binaryReader.BaseStream.Seek((long)ClusterNumberToByte(currentClusterNumber), SeekOrigin.Begin);
                 while (sectorsFromThisCluster < BPB.SectorsPerCluster && !finishedRead)
                 {
-                    if (file.FileSizeB - bytesRead > BPB.BytesPerSector)
+                    if (maxFileSize - bytesRead > BPB.BytesPerSector)
                     {
                         bytesRead += BPB.BytesPerSector;
                         binaryWriter.Write(binaryReader.ReadBytes(BPB.BytesPerSector));
                     } else
                     {
-                        binaryWriter.Write(binaryReader.ReadBytes((int)((file.FileSizeB - bytesRead) % int.MaxValue)));
+                        binaryWriter.Write(binaryReader.ReadBytes((int)((maxFileSize - bytesRead) % int.MaxValue)));
                         bytesRead += file.FileSizeB - bytesRead;
                         finishedRead = true;
                     }

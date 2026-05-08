@@ -4,6 +4,7 @@ using System.IO;
 using System.Reflection.Metadata.Ecma335;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
+using Avalonia.Media;
 using Avalonia.Platform.Storage;
 
 namespace fatimageexplorer;
@@ -27,61 +28,65 @@ public partial class MainWindow : Window
     {
         InitializeComponent();
 
-        Button extractButton = new Button() {Content = "Extract", Width = 100};
+        Width = 800;
+        Height=450;
+        Background = Brushes.Black;
+
+        Button extractButton = new Button() {Content = "Extract", Width = 100, Background=Brushes.DarkSlateGray, Foreground=Brushes.White};
         extractButton.Click += Extract;
 
         MainCanvas.Children.Add(extractButton);
         Canvas.SetLeft(extractButton, 140);
         Canvas.SetBottom(extractButton, 20);
 
-        Button exportButton = new Button() {Content = "Export", Width = 100};
+        Button exportButton = new Button() {Content = "Export", Width = 100, Background=Brushes.DarkSlateGray, Foreground=Brushes.White};
         exportButton.Click += Export;
 
         MainCanvas.Children.Add(exportButton);
         Canvas.SetLeft(exportButton, 380);
         Canvas.SetBottom(exportButton, 20);
 
-        Button injectButton = new Button() {Content = "Inject", Width = 100};
+        Button injectButton = new Button() {Content = "Inject", Width = 100, Background=Brushes.DarkSlateGray, Foreground=Brushes.White, };
         injectButton.Click += Inject;
 
         MainCanvas.Children.Add(injectButton);
         Canvas.SetLeft(injectButton, 260);
         Canvas.SetBottom(injectButton, 20);
 
-        Button openButton = new Button() { Content = "Open", Width = 100};
+        Button openButton = new Button() { Content = "Open", Width = 100, Background=Brushes.DarkSlateGray, Foreground=Brushes.White};
         openButton.Click += Open;
 
-        filesListBox = new ListBox() {ItemsSource = listOfFiles, Height = 180, Width = 500};
+        filesListBox = new ListBox() {ItemsSource = listOfFiles, Height = 180, Width = 500, Background=Brushes.DarkSlateGray, Foreground=Brushes.White, FontFamily = new("monospace")};
         filesListBox.HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Left;
         filesListBox.SelectionChanged += FileSelectionChanged;
         MainCanvas.Children.Add(filesListBox);
         Canvas.SetLeft(filesListBox, 20);
         Canvas.SetTop(filesListBox, 180);
 
-        filesLabel = new() {Content = "Files:"};
+        filesLabel = new() {Content = "Files:", Foreground=Brushes.White};
         MainCanvas.Children.Add(filesLabel);
         Canvas.SetLeft(filesLabel, 20);
         Canvas.SetTop(filesLabel, 160);
 
-        directoriesListBox = new ListBox() {ItemsSource = listOfDirs, Height = 100, Width = 400};
+        directoriesListBox = new ListBox() {ItemsSource = listOfDirs, Height = 100, Width = 400, Background=Brushes.DarkSlateGray, Foreground=Brushes.White, FontFamily = new("monospace")};
         directoriesListBox.HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Left;
         //directoriesListBox.SelectionChanged += FileSelectionChanged;
         MainCanvas.Children.Add(directoriesListBox);
         Canvas.SetLeft(directoriesListBox, 20);
         Canvas.SetTop(directoriesListBox, 40);
 
-        directoriesLabel = new() {Content = "Directories:"};
+        directoriesLabel = new() {Content = "Directories:", Foreground=Brushes.White};
         MainCanvas.Children.Add(directoriesLabel);
         Canvas.SetLeft(directoriesLabel, 20);
         Canvas.SetTop(directoriesLabel, 20);
 
-        ParentDir = new() {Content = ".. (^)", Width=80};
+        ParentDir = new() {Content = ".. (^)", Width=80, Background=Brushes.DarkSlateGray, Foreground=Brushes.White};
         ParentDir.Click+= Parent_Click;
         MainCanvas.Children.Add(ParentDir);
         Canvas.SetLeft(ParentDir, 440);
         Canvas.SetTop(ParentDir, 40);
 
-        EnterSubdir = new() {Content = "Enter", Width=80};
+        EnterSubdir = new() {Content = "Enter", Width=80, Background=Brushes.DarkSlateGray, Foreground=Brushes.White};
         EnterSubdir.Click+= EnterSubdir_Click;
         MainCanvas.Children.Add(EnterSubdir);
         Canvas.SetLeft(EnterSubdir, 440);
@@ -91,32 +96,32 @@ public partial class MainWindow : Window
         Canvas.SetLeft(openButton, 20);
         Canvas.SetBottom(openButton, 20);
 
-        Button deleteButton = new Button() {Content = "Delete", Width = 100};
+        Button deleteButton = new Button() {Content = "Delete", Width = 100, Background=Brushes.DarkSlateGray, Foreground=Brushes.White};
         deleteButton.Click += Delete;
 
         MainCanvas.Children.Add(deleteButton);
         Canvas.SetLeft(deleteButton, 500);
         Canvas.SetBottom(deleteButton, 20);
 
-        partitionSelection = new() {ItemsSource = listOfPartitions, Width = 240};
+        partitionSelection = new() {ItemsSource = listOfPartitions, Width = 240, Background=Brushes.DarkSlateGray, Foreground=Brushes.White};
         partitionSelection.SelectionChanged += SelectPartition;
 
         MainCanvas.Children.Add(partitionSelection);
         Canvas.SetLeft(partitionSelection, 540);
         Canvas.SetTop(partitionSelection, 40);
 
-        partitionLabel = new() {Content = "Partition:"};
+        partitionLabel = new() {Content = "Partition:", Foreground=Brushes.White};
         MainCanvas.Children.Add(partitionLabel);
         Canvas.SetLeft(partitionLabel, 540);
         Canvas.SetTop(partitionLabel, 20);
 
-        preview = new() {Text = "", Width = 240, Height = 260, TextWrapping = Avalonia.Media.TextWrapping.Wrap};
+        preview = new() {Text = "", Width = 240, Height = 260, TextWrapping = TextWrapping.Wrap, AcceptsReturn = true, AcceptsTab = true, Background=Brushes.DarkSlateGray, Foreground=Brushes.White};
 
         MainCanvas.Children.Add(preview);
         Canvas.SetLeft(preview, 540);
         Canvas.SetTop(preview, 100);
 
-        previewLabel = new() {Content = "Preview:", Width = 240};
+        previewLabel = new() {Content = "Preview:", Width = 240, Foreground=Brushes.White};
 
         MainCanvas.Children.Add(previewLabel);
         Canvas.SetLeft(previewLabel, 540);
@@ -151,7 +156,7 @@ public partial class MainWindow : Window
             return;
         }
 
-        image.partitions[selected].ExtractFile((string)filePath.TryGetLocalPath(), image.partitions[selected].GetDirectoryEntryByName((string)filesListBox.SelectedItem));
+        image.partitions[selected].ExtractFile((string)filePath.TryGetLocalPath(), image.partitions[selected].GetDirectoryEntryByName((string)filesListBox.SelectedItem), false);
     }
 
     public async void Delete(object sender, RoutedEventArgs routedEventArgs)
@@ -370,7 +375,7 @@ public partial class MainWindow : Window
         }
         if (selectedItem.Split('.')[1] == "TXT" || selectedItem.Split('.')[1] == "BAT" || selectedItem.Split('.')[1] == "MD")
         {
-            image.partitions[selected].ExtractFile("temp.txt", image.partitions[selected].GetDirectoryEntryByName(selectedItem));
+            image.partitions[selected].ExtractFile("temp.txt", image.partitions[selected].GetDirectoryEntryByName(selectedItem), false);
             StreamReader streamReader = new(File.Open("temp.txt", FileMode.OpenOrCreate));
             preview.Text = streamReader.ReadToEnd();
             streamReader.Close();
@@ -388,19 +393,7 @@ public partial class MainWindow : Window
 
             image.partitions[selected].OpenSubdir(tempEntry);
 
-            listOfFiles = [];
-            foreach (DirectoryEntry entry in image.partitions[selected].currentDirectory)
-            {
-                listOfFiles.Add(entry.FileName + "." + entry.FileExtension);
-            }
-            filesListBox.ItemsSource = listOfFiles;
-
-            listOfDirs = [];
-            foreach (DirectoryEntry entry in image.partitions[selected].currentDirectorySubdirectories)
-            {
-                listOfDirs.Add(entry.FileName + entry.FileExtension);
-            }
-            directoriesListBox.ItemsSource = listOfDirs;
+            UpdateItemListsToCurrentDirectory();
         }
     }
 
@@ -414,5 +407,24 @@ public partial class MainWindow : Window
         {
             image.partitions[selected].PopulateSubdir(image.partitions[selected].ParentDirs.Pop());
         }
+
+        UpdateItemListsToCurrentDirectory();
+    }
+
+    public void UpdateItemListsToCurrentDirectory()
+    {
+        listOfFiles = [];
+            foreach (DirectoryEntry entry in image.partitions[selected].currentDirectory)
+            {
+                listOfFiles.Add(entry.FileName + "." + entry.FileExtension);
+            }
+            filesListBox.ItemsSource = listOfFiles;
+
+            listOfDirs = [];
+            foreach (DirectoryEntry entry in image.partitions[selected].currentDirectorySubdirectories)
+            {
+                listOfDirs.Add(entry.FileName + entry.FileExtension);
+            }
+            directoriesListBox.ItemsSource = listOfDirs;
     }
 }

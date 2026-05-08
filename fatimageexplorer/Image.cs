@@ -44,7 +44,7 @@ namespace fatimageexplorer
             {
                 return new Floppy_Image(filename);
             }
-            if (firstByte == 0xFA)
+            if (firstByte == 0xFA || firstByte == 0x33)
             {
                 return new HDD_Image(filename);
             }
