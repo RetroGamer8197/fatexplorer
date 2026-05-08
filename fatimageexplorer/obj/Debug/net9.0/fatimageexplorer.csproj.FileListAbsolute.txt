@@ -64,3 +64,4 @@
 /Users/thomas/Documents/vscode/fatexplorer/fatimageexplorer/obj/Debug/net9.0/fatimage.0587A2F4.Up2Date
 /Users/thomas/Documents/vscode/fatexplorer/fatimageexplorer/obj/Debug/net9.0/fatimageexplorer.genruntimeconfig.cache
 /Users/thomas/Documents/vscode/fatexplorer/fatimageexplorer/obj/Debug/net9.0/ref/fatimageexplorer.dll
+/Users/thomas/Documents/vscode/fatexplorer/fatimageexplorer/obj/Debug/net9.0/fatimageexplorer.sourcelink.json
