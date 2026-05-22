@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("fatimageexplorer")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+c344366b9b699b6c0bfd3933e6e968cd13b51e88")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+7dc48c8679d725f7e560a34edb2a576453407cd2")]
 [assembly: System.Reflection.AssemblyProductAttribute("fatimageexplorer")]
 [assembly: System.Reflection.AssemblyTitleAttribute("fatimageexplorer")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
