@@ -1,20 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "/home/thomas/Documents/vscode/fatexplorer/fatexplorer/fatimageexplorer/fatimageexplorer.csproj": {}
+    "/Users/thomas/Documents/vscode/fatexplorer/fatimageexplorer/fatimageexplorer.csproj": {}
   },
   "projects": {
-    "/home/thomas/Documents/vscode/fatexplorer/fatexplorer/fatimageexplorer/fatimageexplorer.csproj": {
+    "/Users/thomas/Documents/vscode/fatexplorer/fatimageexplorer/fatimageexplorer.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/home/thomas/Documents/vscode/fatexplorer/fatexplorer/fatimageexplorer/fatimageexplorer.csproj",
+        "projectUniqueName": "/Users/thomas/Documents/vscode/fatexplorer/fatimageexplorer/fatimageexplorer.csproj",
         "projectName": "fatimageexplorer",
-        "projectPath": "/home/thomas/Documents/vscode/fatexplorer/fatexplorer/fatimageexplorer/fatimageexplorer.csproj",
-        "packagesPath": "/home/thomas/.nuget/packages/",
-        "outputPath": "/home/thomas/Documents/vscode/fatexplorer/fatexplorer/fatimageexplorer/obj/",
+        "projectPath": "/Users/thomas/Documents/vscode/fatexplorer/fatimageexplorer/fatimageexplorer.csproj",
+        "packagesPath": "/Users/thomas/.nuget/packages/",
+        "outputPath": "/Users/thomas/Documents/vscode/fatexplorer/fatimageexplorer/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "/home/thomas/.nuget/NuGet/NuGet.Config"
+          "/Users/thomas/.nuget/NuGet/NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net9.0"
@@ -79,11 +79,15 @@
           "downloadDependencies": [
             {
               "name": "Microsoft.AspNetCore.App.Ref",
-              "version": "[9.0.14, 9.0.14]"
+              "version": "[9.0.13, 9.0.13]"
             },
             {
-              "name": "Microsoft.NETCore.App.Host.linux-x64",
-              "version": "[9.0.14, 9.0.14]"
+              "name": "Microsoft.NETCore.App.Host.osx-arm64",
+              "version": "[9.0.13, 9.0.13]"
+            },
+            {
+              "name": "Microsoft.NETCore.App.Ref",
+              "version": "[9.0.13, 9.0.13]"
             }
           ],
           "frameworkReferences": {
@@ -91,7 +95,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "/usr/share/dotnet/sdk/10.0.104/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/10.0.103/PortableRuntimeIdentifierGraph.json"
         }
       }
     }
